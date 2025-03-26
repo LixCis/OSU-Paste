@@ -1,5 +1,5 @@
 from html import escape
-from flask import Flask, request, render_template, redirect, url_for, g
+from flask import Flask, request, render_template, redirect, url_for, g, Request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import uuid
@@ -9,6 +9,10 @@ from pygments import highlight
 from pygments.lexers import guess_lexer, get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
+class CustomRequest(Request):
+    def __init__(self, *args, **kwargs):
+        super(CustomRequest, self).__init__(*args, **kwargs)
+        self.max_form_parts = 50000000
 app = Flask(__name__)
 MEGABYTE = (2 ** 10) ** 2
 app.config['MAX_CONTENT_LENGTH'] = None
