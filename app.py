@@ -21,6 +21,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pastes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+MAX_CODE_LENGTH = 10000
+
 class Paste(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     short_id = db.Column(db.String(5), unique=True)
@@ -76,12 +78,15 @@ def show_paste(short_id):
     css_styles = HtmlFormatter(style='colorful', full=False, noclasses=False).get_style_defs('.highlight')
 
     if paste.type == 'code':
-        try:
-            lexer = get_lexer_by_name(paste.detected_language.lower()) if paste.detected_language != "Unknown" else guess_lexer(paste.content)
-        except Exception:
-            lexer = get_lexer_by_name("text")
-        formatter = HtmlFormatter(style='colorful', full=False, noclasses=False)
-        content = highlight(paste.content, lexer, formatter)
+        if len(paste.content) > MAX_CODE_LENGTH:
+            content = f'<pre class="bg-base-100 p-2 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
+        else:
+            try:
+                lexer = get_lexer_by_name(paste.detected_language.lower()) if paste.detected_language != "Unknown" else guess_lexer(paste.content)
+            except Exception:
+                lexer = get_lexer_by_name("text")
+            formatter = HtmlFormatter(style='colorful', full=False, noclasses=False)
+            content = highlight(paste.content, lexer, formatter)
     else:
         content = f'<pre class="bg-base-100 p-2 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
 
