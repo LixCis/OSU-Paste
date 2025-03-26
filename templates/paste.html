@@ -6,16 +6,25 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Uložený paste | {{ short_id }}</title>
+    <style>
+        {{ css_styles | safe }}
+    </style>
 </head>
 <body class="flex flex-col min-h-screen">
-    {% include 'includes/navbar.html' %}
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
-        <div class="flex flex-row justify-between">
-            <h1 class="mb-6 text-xl font-medium">Váš uložený text {{ short_id }}</h1>
-            <p class="mb-6 text-sm text-gray-500">Vytvořeno: {{ created_at }}</p>
+{% include 'includes/navbar.html' %}
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
+    <div class="flex flex-row justify-between justify-items-center">
+        <h1 class="mb-6 text-xl font-medium">Váš uložený text {{ short_id }}</h1>
+        <div>
+            <p class="text-sm text-gray-500">Vytvořeno: <strong>{{ created_at }}</strong></p>
+            {% if detected_language != "Unknown" %}
+                <p class="text-sm text-gray-500">Detekovaný jazyk: <strong>{{ detected_language }}</strong></p>
+            {% endif %}
         </div>
-        <pre class="shadow bg-base-100 border border-primary min-h-24 p-2 rounded whitespace-pre-wrap break-words max-w-full">{{ content }}</pre>
-    </main>
-    {% include 'includes/footer.html' %}
+    </div>
+
+    <pre class="shadow bg-base-100 border border-primary min-h-24 p-2 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
+</main>
+{% include 'includes/footer.html' %}
 </body>
 </html>

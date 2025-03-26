@@ -8,16 +8,46 @@
     <title>Vložte text</title>
 </head>
 <body class="flex flex-col min-h-screen">
-    {% include 'includes/navbar.html' %}
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
-        <h1 class="mb-5 text-xl font-medium">Nový paste</h1>
-        <form method="POST">
-            <fieldset class="fieldset">
-                <textarea name="content" class="textarea textarea-primary w-full min-h-48" placeholder="Zde vložte váš text" required></textarea>
-            </fieldset>
-            <button type="submit" class="mt-5 btn btn-soft btn-primary">Submit</button>
-        </form>
-    </main>
-    {% include 'includes/footer.html' %}
+{% include 'includes/navbar.html' %}
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
+    <h1 class="mb-5 text-xl font-medium">Nový paste</h1>
+    <form method="POST">
+        <fieldset class="fieldset">
+            <textarea name="content" class="textarea textarea-primary w-full min-h-48" placeholder="Zde vložte váš text" required></textarea>
+        </fieldset>
+
+        <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
+            <legend class="fieldset-legend">Typ obsahu</legend>
+            <label class="fieldset-label flex items-center">
+                <input type="checkbox" name="type" class="toggle" />
+                <span id="toggle-label" class="ml-2">Text</span>
+            </label>
+        </fieldset>
+
+        <button type="submit" class="mt-5 btn btn-soft btn-primary">Uložit</button>
+    </form>
+</main>
+{% include 'includes/footer.html' %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.querySelector('input[name="type"]');
+        const toggleLabel = document.getElementById("toggle-label");
+
+        function updateLabel() {
+            if (toggle.checked) {
+                toggleLabel.textContent = "Kód";
+                toggleLabel.classList.remove("text-gray-500");
+                toggleLabel.classList.add("text-neutral");
+            } else {
+                toggleLabel.textContent = "Text";
+                toggleLabel.classList.remove("text-neutral");
+                toggleLabel.classList.add("text-gray-500");
+            }
+        }
+
+        toggle.addEventListener("change", updateLabel);
+        updateLabel();
+    });
+</script>
 </body>
 </html>
