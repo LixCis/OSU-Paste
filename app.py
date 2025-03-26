@@ -5,14 +5,12 @@ from datetime import datetime
 import uuid
 import random
 import string
-from pygments import highlight
-from pygments.lexers import guess_lexer, get_lexer_by_name
-from pygments.formatters import HtmlFormatter
 
 class CustomRequest(Request):
     def __init__(self, *args, **kwargs):
         super(CustomRequest, self).__init__(*args, **kwargs)
         self.max_form_parts = 50000000
+
 app = Flask(__name__)
 MEGABYTE = (2 ** 10) ** 2
 app.config['MAX_CONTENT_LENGTH'] = None
@@ -21,14 +19,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pastes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-MAX_CODE_LENGTH = 10000
-
 class Paste(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     short_id = db.Column(db.String(5), unique=True)
     content = db.Column(db.Text, nullable=False)
     type = db.Column(db.String(10), default='text')
-    detected_language = db.Column(db.String(50), default='Unknown')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def generate_short_id(self):
@@ -54,13 +49,6 @@ def index():
         new_paste = Paste(content=content, type=paste_type)
         new_paste.short_id = new_paste.generate_short_id()
 
-        if paste_type == 'code':
-            try:
-                lexer = guess_lexer(content)
-                new_paste.detected_language = lexer.name
-            except Exception:
-                new_paste.detected_language = "Unknown"
-
         db.session.add(new_paste)
         db.session.commit()
         return redirect(url_for('show_paste', short_id=new_paste.short_id))
@@ -73,30 +61,18 @@ def show_paste(short_id):
     if not paste:
         return "Paste nenalezen", 404
 
-    created_at = paste.created_at.strftime("%Y-%m-%d %H:%M:%S")
-
-    css_styles = HtmlFormatter(style='colorful', full=False, noclasses=False).get_style_defs('.highlight')
+    created_at = paste.created_at.strftime("%d.%m.%Y %H:%M:%S")
 
     if paste.type == 'code':
-        if len(paste.content) > MAX_CODE_LENGTH:
-            content = f'<pre class="bg-base-100 p-2 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
-        else:
-            try:
-                lexer = get_lexer_by_name(paste.detected_language.lower()) if paste.detected_language != "Unknown" else guess_lexer(paste.content)
-            except Exception:
-                lexer = get_lexer_by_name("text")
-            formatter = HtmlFormatter(style='colorful', full=False, noclasses=False)
-            content = highlight(paste.content, lexer, formatter)
+        content = f'<pre class="bg-base-100 rounded whitespace-pre-wrap break-words max-w-full"><code class="rounded">{escape(paste.content)}</code></pre>'
     else:
-        content = f'<pre class="bg-base-100 p-2 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
+        content = f'<pre class="bg-base-100 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
 
     return render_template(
         'paste.html',
         content=content,
         short_id=short_id,
-        created_at=created_at,
-        css_styles=css_styles,
-        detected_language=paste.detected_language
+        created_at=created_at
     )
 
 if __name__ == '__main__':
