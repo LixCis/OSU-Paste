@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="{{url_for('static',filename='dist/output.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
@@ -33,8 +32,8 @@
             <p class="text-sm text-gray-500">Vytvořeno: <strong>{{ created_at }}</strong></p>
         </div>
         <div class="mt-4 flex flex-col sm:flex-row gap-2 items-end">
-            <button id="download-btn" class="btn btn-sm sm:btn-md btn-primary sm:mr-2">Stáhnout</button>
-            <button id="copy-btn" class="btn btn-sm sm:btn-md btn-outline btn-primary">Zkopírovat</button>
+            <button id="download-btn" class="btn max-sm:btn-sm btn-primary sm:mr-2">Stáhnout</button>
+            <button id="copy-btn" class="btn max-sm:btn-sm btn-outline btn-primary">Zkopírovat</button>
         </div>
     </div>
 
