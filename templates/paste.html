@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='dist/output.css')}}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+    <link rel="stylesheet" href="{{url_for('static',filename='files/default.min.css')}}">
+    <script src="{{url_for('static',filename='files/highlight.min.js')}}"></script>
+    <script src=""{{url_for('static',filename='files/go.min.js')}}"></script>
     <script>hljs.highlightAll();</script>
     <title>Uložený paste | {{ short_id }}</title>
     <style>
