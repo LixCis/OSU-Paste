@@ -10,21 +10,87 @@
         {{ css_styles | safe }}
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen relative">
 {% include 'includes/navbar.html' %}
 <main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
-    <div class="flex flex-row justify-between justify-items-center">
-        <h1 class="mb-6 text-xl font-medium">Váš uložený text {{ short_id }}</h1>
+    <div class="flex flex-row justify-between items-end mb-3">
         <div>
+            <h1 class="text-xl mb-2 font-medium">Váš uložený text {{ short_id }}</h1>
             <p class="text-sm text-gray-500">Vytvořeno: <strong>{{ created_at }}</strong></p>
             {% if detected_language != "Unknown" %}
                 <p class="text-sm text-gray-500">Detekovaný jazyk: <strong>{{ detected_language }}</strong></p>
             {% endif %}
         </div>
+        <div class="mt-4">
+            <button id="download-btn" class="btn btn-primary mr-2">Stáhnout jako .txt</button>
+            <button id="copy-btn" class="btn btn-outline btn-primary">Zkopírovat</button>
+        </div>
     </div>
 
-    <pre class="shadow bg-base-100 border border-primary min-h-24 p-2 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
+    <pre id="content" class="shadow bg-base-100 border border-primary min-h-24 p-2 rounded whitespace-pre-wrap break-words max-w-full overflow-x-auto touch-pan-x">{{ content | safe }}</pre>
+
+    <!-- Success and Error Alerts -->
+    <div id="alert-success" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-white bg-green-500 rounded shadow-md hidden">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="ml-2">Text zkopírován do schránky!</span>
+        </div>
+    </div>
+    <div id="alert-error" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-white bg-red-500 rounded shadow-md hidden">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span class="ml-2">Chyba při kopírování textu!</span>
+        </div>
+    </div>
 </main>
 {% include 'includes/footer.html' %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const copyButton = document.getElementById('copy-btn');
+        const downloadButton = document.getElementById('download-btn');
+        const contentElement = document.getElementById('content');
+        const alertSuccess = document.getElementById('alert-success');
+        const alertError = document.getElementById('alert-error');
+
+        // Copy content to clipboard
+        copyButton.addEventListener('click', function () {
+            // Disable button to prevent spamming
+            copyButton.disabled = true;
+
+            const content = contentElement.innerText || contentElement.textContent;
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                    alertSuccess.classList.remove('hidden');
+                    setTimeout(() => alertSuccess.classList.add('hidden'), 1000); // Hide after 3 seconds
+                })
+                .catch(err => {
+                    alertError.classList.remove('hidden');
+                    setTimeout(() => alertError.classList.add('hidden'), 1000); // Hide after 3 seconds
+                    console.error('Chyba při kopírování textu: ', err);
+                })
+                .finally(() => {
+                    // Re-enable the button after a delay
+                    setTimeout(() => {
+                        copyButton.disabled = false;
+                    }, 1000); // Allow clicking again after 1 second
+                });
+        });
+
+        // Download content as a .txt file
+        downloadButton.addEventListener('click', function () {
+            const content = contentElement.innerText || contentElement.textContent;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "paste_{{ short_id }}.txt";
+            link.click();
+        });
+    });
+</script>
 </body>
 </html>
