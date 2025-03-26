@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Vložte text</title>
 </head>
-<body>
-<h1>Vložte svůj text</h1>
-<form method="POST">
-    <textarea name="content" required></textarea>
-    <button type="submit">Submit</button>
-</form>
+<body class="flex flex-col min-h-screen">
+    {% include 'includes/navbar.html' %}
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
+        <h1 class="mb-5 text-xl font-medium">Nový paste</h1>
+        <form method="POST">
+            <fieldset class="fieldset">
+                <textarea name="content" class="textarea textarea-primary w-full min-h-48" placeholder="Zde vložte váš text" required></textarea>
+            </fieldset>
+            <button type="submit" class="mt-5 btn btn-soft btn-primary">Submit</button>
+        </form>
+    </main>
+    {% include 'includes/footer.html' %}
 </body>
 </html>

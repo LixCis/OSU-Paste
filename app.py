@@ -1,5 +1,8 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from html import escape
+
+from flask import Flask, request, jsonify, render_template, redirect, url_for, g
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 import uuid
 import random
 import string
@@ -14,6 +17,7 @@ class Paste(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     short_id = db.Column(db.String(5), unique=True)
     content = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def generate_short_id(self):
         characters = string.ascii_letters + string.digits
@@ -28,8 +32,6 @@ def before_request():
         with app.app_context():
             db.create_all()
             g.db_initialized = True
-
-from flask import g
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -46,7 +48,9 @@ def index():
 def show_paste(short_id):
     paste = Paste.query.filter_by(short_id=short_id).first()
     if paste:
-        return render_template('paste.html', content=paste.content)
+        content = escape(paste.content)
+        created_at = paste.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        return render_template('paste.html', content=content, short_id=short_id, created_at=created_at)
     return "Paste nenalezen", 404
 
 if __name__ == '__main__':

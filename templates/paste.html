@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uložený text</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Uložený paste | {{ short_id }}</title>
 </head>
-<body>
-<h1>Váš uložený text</h1>
-<pre>{{ content }}</pre>
-<a href="{{ url_for('index') }}">Vytvořit nový paste</a>
+<body class="flex flex-col min-h-screen">
+    {% include 'includes/navbar.html' %}
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
+        <div class="flex flex-row justify-between">
+            <h1 class="mb-6 text-xl font-medium">Váš uložený text {{ short_id }}</h1>
+            <p class="mb-6 text-sm text-gray-500">Vytvořeno: {{ created_at }}</p>
+        </div>
+        <pre class="shadow bg-base-100 border border-primary min-h-24 p-2 rounded whitespace-pre-wrap break-words max-w-full">{{ content }}</pre>
+    </main>
+    {% include 'includes/footer.html' %}
 </body>
 </html>
