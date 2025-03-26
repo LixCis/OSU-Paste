@@ -76,7 +76,7 @@ def show_paste(short_id):
         formatter = HtmlFormatter(style='colorful', full=False, noclasses=False)
         content = highlight(paste.content, lexer, formatter)
     else:
-        content = f'<pre class="bg-base-100 p-4 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
+        content = f'<pre class="bg-base-100 p-2 rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
 
     return render_template(
         'paste.html',
