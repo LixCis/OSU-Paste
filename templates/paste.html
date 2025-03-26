@@ -26,19 +26,19 @@
 </head>
 <body class="flex flex-col min-h-screen relative">
 {% include 'includes/navbar.html' %}
-<main class="flex-1 w-full max-w-7xl mx-auto px-4 my-20">
-    <div class="flex flex-row justify-between items-end mb-3">
+<main class="flex-1 w-full max-w-7xl mx-auto px-2 my-20">
+    <div class="flex flex-row gap-2 justify-between items-end mb-3">
         <div>
-            <h1 class="text-xl mb-2 font-medium">Váš uložený text - {{ short_id }}</h1>
+            <h1 class="text-lg sm:text-xl mb-2 font-medium">Váš uložený text - {{ short_id }}</h1>
             <p class="text-sm text-gray-500">Vytvořeno: <strong>{{ created_at }}</strong></p>
         </div>
-        <div class="mt-4">
-            <button id="download-btn" class="btn btn-primary mr-2">Stáhnout jako .txt</button>
-            <button id="copy-btn" class="btn btn-outline btn-primary">Zkopírovat</button>
+        <div class="mt-4 flex flex-col sm:flex-row gap-2 items-end">
+            <button id="download-btn" class="btn btn-sm sm:btn-md btn-primary sm:mr-2">Stáhnout</button>
+            <button id="copy-btn" class="btn btn-sm sm:btn-md btn-outline btn-primary">Zkopírovat</button>
         </div>
     </div>
 
-    <pre id="content" class="shadow bg-base-100 border border-primary min-h-24 p-4 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
+    <pre id="content" class="shadow bg-base-100 border border-primary min-h-24 p-2 text-sm sm:p-4 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
 
     <div id="alert-success" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-white bg-green-500 rounded shadow-md hidden">
         <div class="flex items-center">
