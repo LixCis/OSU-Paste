@@ -72,7 +72,7 @@
         const toggle = document.querySelector('input[name="type"]');
         const toggleLabel = document.getElementById("toggle-label");
 
-        function updateLabel() {
+        function updateContentTypeLabel() {
             if (toggle.checked) {
                 toggleLabel.textContent = "Kód";
                 toggleLabel.classList.remove("text-gray-500");
@@ -84,8 +84,8 @@
             }
         }
 
-        toggle.addEventListener("change", updateLabel);
-        updateLabel();
+        toggle.addEventListener("change", updateContentTypeLabel);
+        updateContentTypeLabel();
 
         const textarea = document.getElementById('content');
         const charCount = document.getElementById('charCount');
@@ -103,23 +103,27 @@
                 charLimitMessage.classList.add('hidden');
             }
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", function () {
         const privateCheckbox = document.getElementById('is_private');
         const privateLabel = document.getElementById('private-label');
         const passwordField = document.getElementById('password-field');
 
-        privateLabel.textContent = privateCheckbox.checked ? "Soukromý paste" : "Veřejný paste";
-
-        privateCheckbox.addEventListener('change', function () {
-            privateLabel.textContent = privateCheckbox.checked ? "Soukromý paste" : "Veřejný paste";
+        function updateVisibilityLabel() {
             if (privateCheckbox.checked) {
+                privateLabel.textContent = "Soukromý paste";
+                privateLabel.classList.remove("text-gray-500");
+                privateLabel.classList.add("text-neutral");
                 passwordField.classList.remove('hidden');
             } else {
+                privateLabel.textContent = "Veřejný paste";
+                privateLabel.classList.remove("text-neutral");
+                privateLabel.classList.add("text-gray-500");
                 passwordField.classList.add('hidden');
             }
-        });
+        }
+
+        privateCheckbox.addEventListener('change', updateVisibilityLabel);
+        updateVisibilityLabel();
     });
 </script>
 </body>

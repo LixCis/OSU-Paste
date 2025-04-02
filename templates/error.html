@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Error {{ code }} | LixCis.cz"/>
 </head>
 <body class="flex flex-col min-h-screen justify-center items-center">
-    <h1 class="text-3xl font-bold text-red-500">Chyba {{ code }}</h1>
+    <h1 class="text-3xl font-bold text-[#ed3e3e]">Chyba {{ code }}</h1>
     <p class="text-lg mt-5 mb-7">{{ message }}</p>
     <div class="flex flex-row justify-center items-center gap-2">
         <a href="{{ url_for('index') }}" class="btn btn-primary">Zpět na hlavní stránku</a>
