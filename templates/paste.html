@@ -41,6 +41,7 @@
         <div>
             <h1 class="text-lg sm:text-xl mb-2 font-medium">Váš uložený text - {{ short_id }}</h1>
             <p class="text-sm text-gray-500">Vytvořeno: <strong>{{ created_at }}</strong></p>
+            <p class="text-sm text-gray-500">Počet znaků: <strong>{{ paste.content | length }}</strong></p>
         </div>
         <div class="mt-4 flex flex-col sm:flex-row gap-2 items-end">
             <button id="download-btn" class="btn max-sm:btn-sm btn-primary sm:mr-2">Stáhnout</button>
@@ -48,14 +49,23 @@
         </div>
     </div>
 
-    <pre id="content" class="shadow bg-[#fefffa] border border-primary min-h-24 p-2 text-sm sm:p-4 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
+    <div id="content" class="shadow bg-[#fefffa] border border-primary min-h-24 p-2 text-sm sm:p-4 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</div>
 
-    {% if error %}
-        <div class="alert alert-error">
-            <strong>Chyba:</strong> {{ error }}
-        </div>
+    <p class="text-sm text-gray-500 mt-3 text-right">Viditelnost: <strong>{{ 'Soukromý paste' if paste.is_private else 'Veřejný paste' }}</strong></p>
+    <p class="text-sm text-gray-500 text-right">Doba uchování do: <strong>{{ expiration_date }}</strong></p>
+
+    {% if paste.is_private %}
+        <form method="POST" action="{{ url_for('show_paste', short_id=short_id) }}" class="mt-4">
+            <fieldset class="fieldset">
+                <label for="password" class="fieldset-label">Zadejte heslo paste pro smazání:</label>
+                <input type="password" maxlength="64" name="password" id="password" required class="input" />
+                <button type="submit" name="action" value="delete" class="btn btn-outline w-fit btn-error">Smazat paste</button>
+            </fieldset>
+            {% if error %}
+                <p class="text-red-500 text-sm mt-2">{{ error }}</p>
+            {% endif %}
+        </form>
     {% endif %}
-
 
     <div id="alert-success" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-black bg-[#A0C878] rounded shadow-md hidden">
         <div class="flex items-center">

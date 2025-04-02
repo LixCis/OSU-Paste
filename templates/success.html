@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chyba {{ code }}</title>
+    <title>Úspěšně smazáno | LixCis.cz</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
     <link rel="icon" type="image/png" href="{{url_for('static',filename='files/fav/favicon-96x96.png')}}" sizes="96x96"/>
     <link rel="icon" type="image/svg+xml" href="{{url_for('static',filename='files/fav/favicon.svg')}}"/>
     <link rel="shortcut icon" href="{{url_for('static',filename='files/fav/favicon.ico')}}"/>
     <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static',filename='files/fav/apple-touch-icon.png')}}"/>
-    <meta name="apple-mobile-web-app-title" content="Error {{ code }} | LixCis.cz"/>
+    <meta name="apple-mobile-web-app-title" content="Úspěšně smazáno | LixCis.cz"/>
 </head>
 <body class="flex flex-col min-h-screen justify-center items-center">
-    <h1 class="text-3xl font-bold text-red-500">Chyba {{ code }}</h1>
-    <p class="text-lg mt-5 mb-7">{{ message }}</p>
+    <h1 class="text-3xl font-bold text-green-500">Paste byl úspěšně smazán!</h1>
+    <p class="text-lg mt-5 mb-7">Paste s ID <strong>{{ short_id }}</strong> byl úspěšně smazán.</p>
     <div class="flex flex-row justify-center items-center gap-2">
         <a href="{{ url_for('index') }}" class="btn btn-primary">Zpět na hlavní stránku</a>
-        <button onclick="window.location.reload();" class="btn btn-secondary">Obnovit stránku</button>
     </div>
 </body>
 </html>

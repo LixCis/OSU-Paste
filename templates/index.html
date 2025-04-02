@@ -34,29 +34,37 @@
             <textarea id="content" name="content" class="textarea textarea-primary w-full min-h-48" placeholder="Zde vložte váš text" required></textarea>
         </fieldset>
 
-        <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
-            <legend class="fieldset-legend">Typ obsahu</legend>
-            <label class="fieldset-label flex items-center">
-                <input type="checkbox" name="type" class="toggle" />
-                <span id="toggle-label" class="ml-2">Text</span>
-            </label>
-        </fieldset>
+        <div class="flex flex-col sm:flex-row sm:gap-4">
+            <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
+                <legend class="fieldset-legend">Typ obsahu</legend>
+                <label class="fieldset-label flex items-center">
+                    <input type="checkbox" name="type" class="toggle" />
+                    <span id="toggle-label" class="ml-2">Text</span>
+                </label>
+            </fieldset>
 
-        <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
-            <legend class="fieldset-legend">Viditelnost</legend>
-            <label class="fieldset-label flex items-center">
-                <input type="checkbox" name="is_private" id="is_private" class="toggle" />
-                <span id="private-label" class="ml-2">Soukromý paste</span>
-            </label>
-        </fieldset>
+            <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
+                <legend class="fieldset-legend">Viditelnost</legend>
+                <label class="fieldset-label flex items-center">
+                    <input type="checkbox" name="is_private" id="is_private" class="toggle" />
+                    <span id="private-label" class="ml-2">Soukromý paste</span>
+                </label>
+            </fieldset>
+        </div>
 
         <div id="password-field" class="fieldset mt-5 hidden">
             <label for="password" class="fieldset-label">Heslo (pro soukromý paste)</label>
-            <input type="password" name="password" id="password" class="input input-primary w-full" placeholder="Zadejte heslo" />
+            <input type="password" name="password" maxlength="64" id="password" class="input input-primary w-full" placeholder="Zadejte heslo" />
+            <label class="fieldset-label">Pokud heslo nebude zadáno, paste bude automaticky veřejný.</label>
         </div>
 
         <button type="submit" class="mt-5 btn btn-primary">Uložit</button>
     </form>
+    {% if error_message %}
+        <div class="mt-4">
+            <div class="text-red-500 text-sm">{{ error_message }}</div>
+        </div>
+    {% endif %}
 </main>
 {% include 'includes/footer.html' %}
 <script>
@@ -96,13 +104,16 @@
             }
         });
     });
-</script>
-<script>
+
     document.addEventListener("DOMContentLoaded", function () {
         const privateCheckbox = document.getElementById('is_private');
+        const privateLabel = document.getElementById('private-label');
         const passwordField = document.getElementById('password-field');
 
+        privateLabel.textContent = privateCheckbox.checked ? "Soukromý paste" : "Veřejný paste";
+
         privateCheckbox.addEventListener('change', function () {
+            privateLabel.textContent = privateCheckbox.checked ? "Soukromý paste" : "Veřejný paste";
             if (privateCheckbox.checked) {
                 passwordField.classList.remove('hidden');
             } else {
