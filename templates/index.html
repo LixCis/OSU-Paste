@@ -23,7 +23,7 @@
     <div class="flex flex-row gap-2 justify-between items-end mb-3">
         <div>
             <h1 class="text-lg sm:text-xl mb-2 font-medium">Nový paste</h1>
-            <div id="charCount" class="text-sm text-gray-500">Počet znaků: 0</div>
+            <div id="charCount" class="text-sm text-gray-500">Počet znaků: <strong>0</strong></div>
         </div>
         <div class="mt-4 flex flex-col sm:flex-row gap-2 items-end">
             <div id="charLimitMessage" class="text-sm text-red-500 hidden">Byl překročen maximální limit 3MB (3000000 znaků)!</div>
@@ -47,7 +47,7 @@
                 <legend class="fieldset-legend">Viditelnost</legend>
                 <label class="fieldset-label flex items-center">
                     <input type="checkbox" name="is_private" id="is_private" class="toggle" />
-                    <span id="private-label" class="ml-2">Soukromý paste</span>
+                    <span id="private-label" class="ml-2">Veřejný paste</span>
                 </label>
             </fieldset>
         </div>
@@ -93,7 +93,7 @@
 
         textarea.addEventListener('input', function () {
             const textLength = textarea.value.length;
-            charCount.textContent = `Počet znaků: ${textLength}`;
+            charCount.innerHTML = `Počet znaků: <strong>${textLength}</strong>`;
 
             if (textLength > 3000000) {
                 charCount.classList.add('text-red-500');
