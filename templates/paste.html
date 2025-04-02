@@ -8,7 +8,18 @@
     <script src="{{url_for('static',filename='files/highlight.min.js')}}"></script>
     <script src="{{url_for('static',filename='files/go.min.js')}}"></script>
     <script>hljs.highlightAll();</script>
-    <title>Uložený paste | {{ short_id }}</title>
+    <title>Paste - {{ short_id }} | LixCis.cz</title>
+    <meta name="description" content="Sdílej a ukládej texty snadno a bezpečně s Paste na LixCis.cz. Podpora syntax highlightingu, soukromé pasty a jednoduché rozhraní." />
+    <meta property="og:title" content="Paste - {{ short_id }} | LixCis.cz">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Sdílej a ukládej texty snadno a bezpečně s Paste na LixCis.cz. Podpora syntax highlightingu, soukromé pasty a jednoduché rozhraní.">
+    <meta property="og:image" content="{{url_for('static',filename='files/fav/favicon-96x96.png')}}" />
+    <meta name="theme-color" content="#3abdf8">
+    <link rel="icon" type="image/png" href="{{url_for('static',filename='files/fav/favicon-96x96.png')}}" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="{{url_for('static',filename='files/fav/favicon.svg')}}"/>
+    <link rel="shortcut icon" href="{{url_for('static',filename='files/fav/favicon.ico')}}"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static',filename='files/fav/apple-touch-icon.png')}}"/>
+    <meta name="apple-mobile-web-app-title" content="Paste - {{ short_id }} | LixCis.cz"/>
     <style>
         pre {
             white-space: pre-wrap;
@@ -19,7 +30,7 @@
             padding: 0 !important;
         }
         .hljs {
-            background: #fff;
+            background: #fefffa;
         }
     </style>
 </head>
@@ -33,13 +44,20 @@
         </div>
         <div class="mt-4 flex flex-col sm:flex-row gap-2 items-end">
             <button id="download-btn" class="btn max-sm:btn-sm btn-primary sm:mr-2">Stáhnout</button>
-            <button id="copy-btn" class="btn max-sm:btn-sm btn-outline btn-primary">Zkopírovat</button>
+            <button id="copy-btn" class="btn max-sm:btn-sm btn-secondary">Zkopírovat</button>
         </div>
     </div>
 
-    <pre id="content" class="shadow bg-base-100 border border-primary min-h-24 p-2 text-sm sm:p-4 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
+    <pre id="content" class="shadow bg-[#fefffa] border border-primary min-h-24 p-2 text-sm sm:p-4 rounded whitespace-pre-wrap break-words max-w-full">{{ content | safe }}</pre>
 
-    <div id="alert-success" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-white bg-green-500 rounded shadow-md hidden">
+    {% if error %}
+        <div class="alert alert-error">
+            <strong>Chyba:</strong> {{ error }}
+        </div>
+    {% endif %}
+
+
+    <div id="alert-success" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-black bg-[#A0C878] rounded shadow-md hidden">
         <div class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -47,7 +65,7 @@
             <span class="ml-2">Text zkopírován do schránky!</span>
         </div>
     </div>
-    <div id="alert-error" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-white bg-red-500 rounded shadow-md hidden">
+    <div id="alert-error" class="absolute top-10 left-1/2 transform -translate-x-1/2 w-80 p-4 mb-4 text-sm text-black bg-[#F16767] rounded shadow-md hidden">
         <div class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

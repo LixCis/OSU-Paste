@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chyba {{ code }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+</head>
+<body class="flex flex-col min-h-screen justify-center items-center">
+<h1 class="text-3xl font-bold text-red-500">Chyba {{ code }}</h1>
+<p class="text-lg mt-5 mb-7">{{ message }}</p>
+<a href="{{ url_for('index') }}" class="btn btn-primary">Zpět na hlavní stránku</a>
+</body>
+</html>

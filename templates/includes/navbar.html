@@ -1,11 +1,15 @@
-<nav class="bg-base-100 shadow-sm">
+<nav class="bg-[#3D8D7A] shadow-sm">
     <div class="navbar mx-auto max-w-7xl px-2">
         <div class="flex-1">
-            <a class="text-xl font-medium">OSU Paste</a>
+            <a href="/" class="text-white flex gap-1 items-center text-xl" (click)="closeMenu()">
+                <img src="{{url_for('static',filename='files/img/logo.webp')}}" alt="Logo" width="50" height="50"
+                     class="pl-2 mr-1">
+                <p class="font-medium">LIXCIS PASTE</p>
+            </a>
         </div>
         <div class="flex-none">
             <ul class="menu menu-horizontal px-0">
-                <li><a href="{{ url_for('index') }}" class="btn btn-soft btn-primary">Vytvořit nový paste</a></li>
+                <li><a href="{{ url_for('index') }}" class="btn btn-primary">Vytvořit nový paste</a></li>
             </ul>
         </div>
     </div>

@@ -4,15 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='dist/output.css')}}">
-    <title>Vložte text</title>
+    <title>Paste | LixCis.cz</title>
+    <meta name="description" content="Sdílej a ukládej texty snadno a bezpečně s Paste na LixCis.cz. Podpora syntax highlightingu, soukromé pasty a jednoduché rozhraní." />
+    <meta property="og:title" content="Paste | LixCis.cz">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Sdílej a ukládej texty snadno a bezpečně s Paste na LixCis.cz. Podpora syntax highlightingu, soukromé pasty a jednoduché rozhraní.">
+    <meta property="og:image" content="{{url_for('static',filename='files/fav/favicon-96x96.png')}}" />
+    <meta name="theme-color" content="#3abdf8">
+    <link rel="icon" type="image/png" href="{{url_for('static',filename='files/fav/favicon-96x96.png')}}" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="{{url_for('static',filename='files/fav/favicon.svg')}}"/>
+    <link rel="shortcut icon" href="{{url_for('static',filename='files/fav/favicon.ico')}}"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static',filename='files/fav/apple-touch-icon.png')}}"/>
+    <meta name="apple-mobile-web-app-title" content="Paste | LixCis.cz"/>
 </head>
 <body class="flex flex-col min-h-screen">
 {% include 'includes/navbar.html' %}
 <main class="flex-1 w-full max-w-7xl mx-auto px-2 my-20">
-    <h1 class="mb-5 text-xl font-medium">Nový paste</h1>
-    <form  method="POST" enctype="multipart/form-data">
+    <div class="flex flex-row gap-2 justify-between items-end mb-3">
+        <div>
+            <h1 class="text-lg sm:text-xl mb-2 font-medium">Nový paste</h1>
+            <div id="charCount" class="text-sm text-gray-500">Počet znaků: 0</div>
+        </div>
+        <div class="mt-4 flex flex-col sm:flex-row gap-2 items-end">
+            <div id="charLimitMessage" class="text-sm text-red-500 hidden">Byl překročen maximální limit 3MB (3000000 znaků)!</div>
+        </div>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
         <fieldset class="fieldset">
-            <textarea name="content" class="textarea textarea-primary w-full min-h-48" placeholder="Zde vložte váš text" required></textarea>
+            <textarea id="content" name="content" class="textarea textarea-primary w-full min-h-48" placeholder="Zde vložte váš text" required></textarea>
         </fieldset>
 
         <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
@@ -23,7 +42,20 @@
             </label>
         </fieldset>
 
-        <button type="submit" class="mt-5 btn btn-soft btn-primary">Uložit</button>
+        <fieldset class="fieldset p-4 bg-base-100 border border-base-300 rounded-box w-64 mt-5">
+            <legend class="fieldset-legend">Viditelnost</legend>
+            <label class="fieldset-label flex items-center">
+                <input type="checkbox" name="is_private" id="is_private" class="toggle" />
+                <span id="private-label" class="ml-2">Soukromý paste</span>
+            </label>
+        </fieldset>
+
+        <div id="password-field" class="fieldset mt-5 hidden">
+            <label for="password" class="fieldset-label">Heslo (pro soukromý paste)</label>
+            <input type="password" name="password" id="password" class="input input-primary w-full" placeholder="Zadejte heslo" />
+        </div>
+
+        <button type="submit" class="mt-5 btn btn-primary">Uložit</button>
     </form>
 </main>
 {% include 'includes/footer.html' %}
@@ -46,6 +78,37 @@
 
         toggle.addEventListener("change", updateLabel);
         updateLabel();
+
+        const textarea = document.getElementById('content');
+        const charCount = document.getElementById('charCount');
+        const charLimitMessage = document.getElementById('charLimitMessage');
+
+        textarea.addEventListener('input', function () {
+            const textLength = textarea.value.length;
+            charCount.textContent = `Počet znaků: ${textLength}`;
+
+            if (textLength > 3000000) {
+                charCount.classList.add('text-red-500');
+                charLimitMessage.classList.remove('hidden');
+            } else {
+                charCount.classList.remove('text-red-500');
+                charLimitMessage.classList.add('hidden');
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const privateCheckbox = document.getElementById('is_private');
+        const passwordField = document.getElementById('password-field');
+
+        privateCheckbox.addEventListener('change', function () {
+            if (privateCheckbox.checked) {
+                passwordField.classList.remove('hidden');
+            } else {
+                passwordField.classList.add('hidden');
+            }
+        });
     });
 </script>
 </body>
