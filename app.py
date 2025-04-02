@@ -1,4 +1,6 @@
 from html import escape
+
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, render_template, redirect, url_for, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
@@ -30,7 +32,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 TZ = timezone('Europe/Prague')
-
 failed_logins = defaultdict(list)
 
 class Paste(db.Model):
@@ -173,6 +174,10 @@ def delete_expired_pastes():
     for paste in expired_pastes:
         db.session.delete(paste)
     db.session.commit()
+
+scheduler = BackgroundScheduler(daemon=True)
+scheduler.add_job(delete_expired_pastes, 'interval', hours=1)
+scheduler.start()
 
 if __name__ == '__main__':
     app.run(debug=True)
