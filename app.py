@@ -17,7 +17,9 @@ app = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=[]
+    storage_uri="redis://localhost:6379",
+    storage_options={"socket_connect_timeout": 30},
+    strategy="fixed-window", # or "moving-window" or "sliding-window-counter"
 )
 
 MEGABYTE = (2 ** 10) ** 2
