@@ -19,12 +19,12 @@ limiter = Limiter(
     app=app,
     storage_uri="redis://localhost:6379",
     storage_options={"socket_connect_timeout": 30},
-    strategy="fixed-window", # or "moving-window" or "sliding-window-counter"
+    strategy="fixed-window",
 )
 
 MEGABYTE = (2 ** 10) ** 2
 MAX_DB_SIZE = 7 * MEGABYTE * 1024
-app.config['MAX_FORM_MEMORY_SIZE'] = 3 * MEGABYTE  # 3 MB limit
+app.config['MAX_FORM_MEMORY_SIZE'] = 3 * MEGABYTE
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pastes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -39,6 +39,7 @@ class Paste(db.Model):
     content = db.Column(db.Text, nullable=False)
     type = db.Column(db.String(10), default='text')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(TZ))
+    expiration_date = db.Column(db.DateTime, nullable=False)
     is_private = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(255), nullable=True)
 
@@ -98,7 +99,11 @@ def handle_post_request():
 
     hashed_password = generate_password_hash(password) if password else None
 
-    new_paste = Paste(content=content, type=paste_type)
+    new_paste = Paste(
+        content=content,
+        type=paste_type,
+        expiration_date=datetime.now(TZ) + timedelta(days=7),
+    )
     new_paste.short_id = new_paste.generate_short_id()
     new_paste.is_private = is_private
     new_paste.password = hashed_password
@@ -108,7 +113,6 @@ def handle_post_request():
 
     return redirect(url_for('show_paste', short_id=new_paste.short_id))
 
-
 @app.route('/<short_id>', methods=['GET', 'POST'])
 def show_paste(short_id):
     paste = Paste.query.filter_by(short_id=short_id).first()
@@ -116,7 +120,12 @@ def show_paste(short_id):
         return render_template('error.html', message="Paste nenalezen", code=404), 404
 
     created_at = paste.created_at.strftime("%d.%m.%Y %H:%M:%S")
-    expiration_date = (paste.created_at + timedelta(days=7)).strftime("%d.%m.%Y %H:%M:%S")
+    expiration_date = paste.expiration_date.strftime("%d.%m.%Y %H:%M:%S")
+
+    if paste.expiration_date.astimezone(TZ) < datetime.now(TZ).astimezone(TZ):
+        db.session.delete(paste)
+        db.session.commit()
+        return render_template('error.html', message="Paste expiroval a byl smazán.", code=410), 410
 
     if paste.is_private:
         ip_address = get_remote_address()
@@ -141,37 +150,27 @@ def show_paste(short_id):
                     return render_template('paste.html', content=paste.content, short_id=short_id, created_at=created_at, paste=paste, expiration_date=expiration_date, error="Nesprávné heslo pro smazání.")
 
             if check_password_hash(paste.password, password):
-                if paste.type == 'code':
-                    content = f'<pre class="rounded whitespace-pre-wrap break-words max-w-full"><code class="rounded">{escape(paste.content)}</code></pre>'
-                else:
-                    content = f'<pre class="rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
-                return render_template('paste.html', content=content, short_id=short_id, created_at=created_at, paste=paste, expiration_date=expiration_date)
+                return render_template('paste.html', content=escape(paste.content), short_id=short_id, created_at=created_at, paste=paste, expiration_date=expiration_date)
 
             failed_logins[ip_address].append(datetime.now(TZ))
             return render_template('paste_password.html', short_id=short_id, expiration_date=expiration_date, error="Nesprávné heslo pro zobrazení.")
 
         return render_template('paste_password.html', short_id=short_id, expiration_date=expiration_date)
 
-    if paste.type == 'code':
-        content = f'<pre class="rounded whitespace-pre-wrap break-words max-w-full"><code class="rounded">{escape(paste.content)}</code></pre>'
-    else:
-        content = f'<pre class="rounded whitespace-pre-wrap break-words max-w-full">{escape(paste.content)}</pre>'
-
-    return render_template('paste.html', content=content, short_id=short_id, created_at=created_at, paste=paste, expiration_date=expiration_date)
+    return render_template('paste.html', content=escape(paste.content), short_id=short_id, created_at=created_at, paste=paste, expiration_date=expiration_date)
 
 @app.errorhandler(413)
 def request_entity_too_large(e):
-    return render_template('error.html', message="Chyba: Příliš velký požadavek! Maximální velikost paste jsou 3MB (3000000 znaků).", code=413), 413
+    return render_template('error.html', message="Chyba: Příliš velký požadavek! Maximální velikost paste jsou 3MB.", code=413), 413
 
 @app.errorhandler(429)
 def rate_limit_exceeded(e):
     return render_template('error.html', message="Překročený limit požadavků! Zkuste to za minutu znovu.", code=429), 429
 
-@app.before_request
-def clean_old_pastes():
+def delete_expired_pastes():
     current_time = datetime.now(TZ)
-    old_pastes = Paste.query.filter(Paste.created_at < current_time - timedelta(days=7)).all()
-    for paste in old_pastes:
+    expired_pastes = Paste.query.filter(Paste.expiration_date < current_time).all()
+    for paste in expired_pastes:
         db.session.delete(paste)
     db.session.commit()
 
